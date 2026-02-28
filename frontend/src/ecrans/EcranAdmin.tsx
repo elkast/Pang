@@ -1,5 +1,5 @@
 // =============================================================================
-// IvoCulture — Écran Admin Principal
+//  — Écran Admin Principal
 // Tableau de bord avec stats et navigation vers les sous-sections
 // =============================================================================
 

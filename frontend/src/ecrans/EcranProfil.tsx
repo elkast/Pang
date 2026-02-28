@@ -3,15 +3,16 @@
 // Menu utilisateur avec navigation vers les sections
 // =============================================================================
 
-import React from 'react';
-import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Alert, StyleSheet, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Couleurs, Typographie, Rayons } from '../constantes';
 import { Chargement } from '../composants';
-import { useAuth } from '../hooks/useAuth';
+import { useAuthContext } from '../context/AuthContext';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -23,12 +24,26 @@ interface ElementMenu {
     couleur: string;
 }
 
+const PHOTO_PROFIL_KEY = 'photo_profil_uri';
+
 export default function EcranProfil() {
     const navigation = useNavigation<Nav>();
-    const { utilisateur, estAdmin, estTouriste, estPremium, chargement, seDeconnecter } = useAuth();
+    const { utilisateur, estAdmin, estTouriste, estPremium, chargement, seDeconnecter } = useAuthContext();
+    const [photoUri, setPhotoUri] = useState<string | null>(null);
+    useEffect(() => {
+        AsyncStorage.getItem(PHOTO_PROFIL_KEY).then((uri) => uri && setPhotoUri(uri));
+    }, []);
+    useEffect(() => {
+        const unsub = navigation.addListener('focus', () => {
+            AsyncStorage.getItem(PHOTO_PROFIL_KEY).then((uri) => setPhotoUri(uri));
+        });
+        return unsub;
+    }, [navigation]);
 
     const elementsMenu: ElementMenu[] = [
         { titre: 'Mes Favoris', icone: 'heart-outline', action: 'Favoris', couleur: Couleurs.etat.erreur },
+        { titre: 'Historique publications', icone: 'time-outline', action: 'Historique', couleur: Couleurs.texte.secondaire },
+        { titre: 'Assistant IA', icone: 'sparkles-outline', action: 'RecommandationsIA', couleur: Couleurs.accent.principal },
         { titre: 'Mes Contributions', icone: 'create-outline', action: 'Contribution', couleur: Couleurs.or.principal },
         { titre: 'Découvrir', icone: 'compass-outline', action: 'Decouverte', couleur: Couleurs.accent.vert },
         { titre: "Portails d'Ivoire", icone: 'map-outline', action: 'Portails', couleur: Couleurs.foret.principal },
@@ -56,6 +71,12 @@ export default function EcranProfil() {
         switch (action) {
             case 'Favoris':
                 navigation.navigate('Favoris');
+                break;
+            case 'Historique':
+                navigation.navigate('HistoriquePublications');
+                break;
+            case 'RecommandationsIA':
+                navigation.navigate('RecommandationsIA');
                 break;
             case 'Contribution':
                 navigation.navigate('Contribution');
@@ -87,11 +108,19 @@ export default function EcranProfil() {
 
             {/* Carte profil */}
             <Animated.View entering={FadeInDown.delay(100).duration(500)}>
-                <View style={styles.carteProfil}>
+                <TouchableOpacity
+                    style={styles.carteProfil}
+                    onPress={() => navigation.navigate('EditerProfil')}
+                    activeOpacity={0.8}
+                >
                     <View style={styles.avatar}>
-                        <Text style={styles.avatarTexte}>
-                            {utilisateur?.username?.charAt(0).toUpperCase() || 'U'}
-                        </Text>
+                        {photoUri ? (
+                            <Image source={{ uri: photoUri }} style={styles.avatarImage} resizeMode="cover" />
+                        ) : (
+                            <Text style={styles.avatarTexte}>
+                                {utilisateur?.username?.charAt(0).toUpperCase() || 'U'}
+                            </Text>
+                        )}
                     </View>
                     <View style={styles.infoProfil}>
                         <Text style={styles.nomProfil}>
@@ -107,7 +136,7 @@ export default function EcranProfil() {
                         )}
                     </View>
                     <Ionicons name="chevron-forward" size={20} color={Couleurs.texte.secondaire} />
-                </View>
+                </TouchableOpacity>
             </Animated.View>
 
             {/* Menu */}
@@ -220,6 +249,11 @@ const styles = StyleSheet.create({
         backgroundColor: Couleurs.accent.principal,
         alignItems: 'center',
         justifyContent: 'center',
+        overflow: 'hidden',
+    },
+    avatarImage: {
+        width: '100%',
+        height: '100%',
     },
     avatarTexte: {
         color: '#FFF',

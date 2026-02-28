@@ -83,12 +83,13 @@ def main():
     print("\n  ▶ Démarrage du serveur...")
     print("  Appuyez sur Ctrl+C pour arrêter\n")
 
-    # Lancer uvicorn
+    # Lancer uvicorn depuis backend/ pour éviter ImportError (relative imports)
+    backend_dir = os.path.join(project_dir, "backend")
     cmd = [
         sys.executable,
         "-m",
         "uvicorn",
-        "backend.main:app",
+        "main:app",
         "--host",
         "0.0.0.0",
         "--port",
@@ -96,7 +97,7 @@ def main():
     ]
 
     try:
-        subprocess.run(cmd, cwd=project_dir)
+        subprocess.run(cmd, cwd=backend_dir)
     except KeyboardInterrupt:
         print("\n\n🛑 Serveur arrêté")
 

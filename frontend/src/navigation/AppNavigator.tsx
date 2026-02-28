@@ -29,6 +29,10 @@ import EcranFavoris from '../ecrans/EcranFavoris';
 import EcranPortails from '../ecrans/EcranPortails';
 import EcranDecouverte from '../ecrans/EcranDecouverte';
 import EcranAbonnement from '../ecrans/EcranAbonnement';
+import EcranEditerProfil from '../ecrans/EcranEditerProfil';
+import EcranHistoriquePublications from '../ecrans/EcranHistoriquePublications';
+import EcranPaiement from '../ecrans/EcranPaiement';
+import EcranRecommandationsIA from '../ecrans/EcranRecommandationsIA';
 
 // Écrans admin
 import EcranAdminUtilisateurs from '../ecrans/EcranAdminUtilisateurs';
@@ -60,6 +64,10 @@ export type RootStackParamList = {
     AdminContenus: undefined;
     AdminRegions: undefined;
     AdminPromotions: undefined;
+    EditerProfil: undefined;
+    HistoriquePublications: undefined;
+    Paiement: { montant?: number; plan?: string; utilisateur?: any };
+    RecommandationsIA: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -130,6 +138,26 @@ export default function AppNavigator() {
                 name="Abonnement"
                 component={EcranAbonnement}
                 options={{ animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="EditerProfil"
+                component={EcranEditerProfil}
+                options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="HistoriquePublications"
+                component={EcranHistoriquePublications}
+                options={{ animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="Paiement"
+                component={EcranPaiement}
+                options={{ animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="RecommandationsIA"
+                component={EcranRecommandationsIA}
+                options={{ animation: 'slide_from_right' }}
             />
 
             {/* Écrans Admin */}

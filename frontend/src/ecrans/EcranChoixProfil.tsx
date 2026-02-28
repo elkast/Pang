@@ -14,6 +14,7 @@ import {
     StatusBar,
     Dimensions,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
@@ -62,8 +63,11 @@ export default function EcranChoixProfil() {
             >
                 {/* En-tête */}
                 <Animated.View entering={FadeInDown.duration(500)} style={styles.entete}>
-                    <Text style={styles.logo}>🗺️</Text>
-                    <Text style={styles.titre}>Bienvenue sur{'\n'}IvoCulture</Text>
+                    <Image
+                        source={require('../../assert/logo.svg')}
+                        style={{ width: 220, height: 70, marginBottom: 16 }}
+                        contentFit="contain"
+                    />
                     <Text style={styles.sousTitre}>Pour commencer, qui êtes-vous ?</Text>
                 </Animated.View>
 
@@ -153,13 +157,6 @@ const styles = StyleSheet.create({
     logo: {
         fontSize: 48,
         marginBottom: 12,
-    },
-    titre: {
-        color: Couleurs.texte.primaire,
-        fontSize: 30,
-        fontWeight: '800',
-        textAlign: 'center',
-        lineHeight: 36,
     },
     sousTitre: {
         color: Couleurs.texte.secondaire,

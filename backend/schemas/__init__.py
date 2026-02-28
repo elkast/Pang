@@ -42,6 +42,7 @@ class TypePromotion(str, Enum):
     MUSIQUE = "musique"
     LEGENDE = "legende"
     TOURISTE = "touriste"
+    TALENT = "talent"
 
 
 # ─── UTILISATEURS ────────────────────────────────────────────────────────────
@@ -73,6 +74,7 @@ class UserOut(BaseModel):
     is_premium: bool = False
     is_admin: bool = False
     is_active: bool = True
+    is_verrouille: bool = False
     role: RoleUtilisateur = RoleUtilisateur.EXPLORATEUR
     preferences: List[str] = []
     contributions_count: int = 0
@@ -187,9 +189,22 @@ class ContenuOut(ContenuBase):
     auteur_id: Optional[int] = None
     vues: int = 0
     likes: int = 0
+    nb_signalements: int = 0
+    is_verrouille: bool = False
     is_published: bool = True
     is_featured: bool = False
     created_at: Optional[datetime] = None
+
+
+class SignalementCreate(BaseModel):
+    motif: Optional[str] = None
+
+
+class SignaleurOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    username: str
+    nom_complet: Optional[str] = None
 
 
 # ─── PROMOTIONS ──────────────────────────────────────────────────────────────

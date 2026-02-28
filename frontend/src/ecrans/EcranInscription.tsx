@@ -57,11 +57,16 @@ export default function EcranInscription() {
         setChargement(true);
         setErreur('');
         try {
-            await inscrire(nomUtilisateur, email, motDePasse, typeUtilisateur);
-            Alert.alert('Succès', 'Compte créé ! Veuillez vous connecter.');
-            navigation.navigate('Connexion');
+            const result = await inscrire(nomUtilisateur, email, motDePasse, typeUtilisateur) as any;
+            if (result?.isLocal) {
+                Alert.alert('Mode hors-ligne', 'Compte créé ! Vous utilisez l\'app en mode local (API indisponible).');
+                navigation.replace('Principal');
+            } else {
+                Alert.alert('Succès', 'Compte créé ! Veuillez vous connecter.');
+                navigation.navigate('Connexion');
+            }
         } catch (error: any) {
-            setErreur(error.response?.data?.detail || "Erreur lors de l'inscription.");
+            setErreur(error?.message || error?.response?.data?.detail || "Erreur lors de l'inscription.");
         } finally {
             setChargement(false);
         }

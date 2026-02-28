@@ -1,5 +1,5 @@
 # =============================================================================
-# IvoCulture — Routeur Profil Utilisateur
+#  — Routeur Profil Utilisateur
 # Consultation, modification, suppression du profil
 # =============================================================================
 

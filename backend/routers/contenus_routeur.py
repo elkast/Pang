@@ -17,6 +17,20 @@ from routers.deps import get_current_user
 router = APIRouter(prefix="/api/contenus", tags=["Contenus Culturels"])
 
 
+@router.get("/mes-contributions", response_model=List[schemas.ContenuOut])
+async def mes_contributions(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Historique des publications de l'utilisateur connecté."""
+    result = await db.execute(
+        select(ContenuCulturel)
+        .where(ContenuCulturel.auteur_id == current_user.id)
+        .order_by(ContenuCulturel.created_at.desc())
+    )
+    return result.scalars().all()
+
+
 @router.get("/", response_model=List[schemas.ContenuOut])
 async def lister_contenus(
     region_id: Optional[int] = None,
@@ -29,7 +43,7 @@ async def lister_contenus(
     db: AsyncSession = Depends(get_db),
 ):
     """Liste les contenus avec filtres optionnels."""
-    query = select(ContenuCulturel).where(ContenuCulturel.is_published == True)
+    query = select(ContenuCulturel).where(ContenuCulturel.is_published == True, ContenuCulturel.is_verrouille == False)
     if region_id is not None:
         query = query.where(ContenuCulturel.region_id == region_id)
     if categorie_id is not None:

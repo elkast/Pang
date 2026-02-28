@@ -1,5 +1,5 @@
 // =============================================================================
-// IvoCulture — Écran Découverte
+// — Écran Découverte
 // Recherche + filtres par type + liste de contenus culturels
 // =============================================================================
 

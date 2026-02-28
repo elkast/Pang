@@ -6,6 +6,7 @@
 
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
     FadeIn,
@@ -82,10 +83,11 @@ export default function EcranSplash() {
             {/* Logo centré */}
             <Animated.View style={[styleLogo]} entering={FadeIn.duration(600)}>
                 <View style={styles.logoConteneur}>
-                    <View style={styles.iconeBadge}>
-                        <Text style={styles.logoIcone}>🏛️</Text>
-                    </View>
-                    <Text style={styles.logoTexte}>IvoCulture</Text>
+                    <Image
+                        source={require('../../assert/logo.svg')}
+                        style={{ width: 310, height: 100, marginBottom: 10 }}
+                        contentFit="contain"
+                    />
                     <Text style={styles.logoSousTitre}>L'âme de la Côte d'Ivoire</Text>
                 </View>
             </Animated.View>
@@ -145,18 +147,9 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 28,
-        backgroundColor: Couleurs.or.clair,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,
-        shadowColor: Couleurs.accent.principal,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.15,
-        shadowRadius: 20,
-        elevation: 8,
-    },
-    logoIcone: {
-        fontSize: 52,
     },
     logoTexte: {
         color: Couleurs.texte.primaire,

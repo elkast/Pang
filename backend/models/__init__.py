@@ -72,6 +72,7 @@ class TypePromotion(str, enum.Enum):
     MUSIQUE = "musique"
     LEGENDE = "legende"
     TOURISTE = "touriste"
+    TALENT = "talent"
 
 
 # ─── MODÈLES ─────────────────────────────────────────────────────────────────
@@ -94,6 +95,7 @@ class User(Base):
     is_premium = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
+    is_verrouille = Column(Boolean, default=False)
     role = Column(SQLEnum(RoleUtilisateur), default=RoleUtilisateur.EXPLORATEUR)
     contributions_count = Column(Integer, default=0)
     created_at = Column(DateTime, server_default=func.now())
@@ -157,6 +159,8 @@ class ContenuCulturel(Base):
     metadata_extra = Column(JSON, default=dict)
     vues = Column(Integer, default=0)
     likes = Column(Integer, default=0)
+    nb_signalements = Column(Integer, default=0)
+    is_verrouille = Column(Boolean, default=False)
     is_published = Column(Boolean, default=True)
     is_featured = Column(Boolean, default=False)
     # Contenu premium : réservé aux touristes abonnés
@@ -184,6 +188,16 @@ class InteractionUtilisateur(Base):
 
     utilisateur = relationship("User", back_populates="interactions")
     contenu = relationship("ContenuCulturel", back_populates="interactions")
+
+
+class Signalement(Base):
+    """Signalement d'un contenu : 5 signalements = verrouillage contenu + auteur"""
+    __tablename__ = "signalements"
+    id = Column(Integer, primary_key=True)
+    contenu_id = Column(Integer, ForeignKey("contenus.id"), nullable=False)
+    signaleur_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    motif = Column(String, nullable=True)  # fausse_info, inappropriate, etc.
+    created_at = Column(DateTime, server_default=func.now())
 
 
 class Promotion(Base):

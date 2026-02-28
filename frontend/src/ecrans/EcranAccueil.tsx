@@ -96,7 +96,7 @@ export default function EcranAccueil() {
                         activeOpacity={0.9}
                     >
                         <Image
-                            source={{ uri: 'https://images.unsplash.com/photo-1516617171622-32994d23f543?w=800' }}
+                            source={{ uri: 'https://sogoci.info/wp-content/uploads/2024/04/cote-divoire-aimer.jpg' }}
                             style={styles.imageBanniere}
                             resizeMode="cover"
                         />
@@ -280,7 +280,7 @@ export default function EcranAccueil() {
                                     activeOpacity={0.85}
                                 >
                                     <Image
-                                        source={{ uri: region.image_url || 'https://picsum.photos/300/200' }}
+                                        source={{ uri: region.image_url || 'https://sogoci.info/wp-content/uploads/2024/04/cote-divoire-aimer.jpg' }}
                                         style={styles.imageRegion}
                                         resizeMode="cover"
                                     />

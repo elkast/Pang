@@ -4,7 +4,7 @@
 // =============================================================================
 
 import React from 'react';
-import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, StyleSheet, Alert } from 'react-native';
 import Animated, {
     useAnimatedScrollHandler,
     useSharedValue,
@@ -20,6 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Couleurs, Typographie, Rayons, obtenirCouleurCategorie } from '../constantes';
 import { Chargement } from '../composants';
 import { useDetailContenu, useLikerContenu, useAjouterFavori } from '../hooks/useContenus';
+import { useSignalerContenu } from '../hooks/useSignalement';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 
 const { width, height } = Dimensions.get('window');
@@ -36,6 +37,7 @@ export default function EcranDetailContenu() {
     const { data: contenu, isLoading } = useDetailContenu(id);
     const mutationLike = useLikerContenu();
     const mutationFavori = useAjouterFavori();
+    const mutationSignaler = useSignalerContenu();
 
     // Animation parallax
     const scrollY = useSharedValue(0);
@@ -68,6 +70,16 @@ export default function EcranDetailContenu() {
 
     if (isLoading) {
         return <Chargement message="Chargement du contenu..." />;
+    }
+
+    if ((contenu as any)?.is_verrouille) {
+        return (
+            <View style={[styles.conteneur, { justifyContent: 'center', padding: 24 }]}>
+                <Text style={{ fontSize: 18, textAlign: 'center', color: Couleurs.etat.erreur }}>
+                    Ce contenu a été verrouillé après plusieurs signalements (fausse information).
+                </Text>
+            </View>
+        );
     }
 
     const titre = contenu?.titre || '';
@@ -142,6 +154,25 @@ export default function EcranDetailContenu() {
                                     onPress={() => mutationFavori.mutate(id)}
                                 >
                                     <Ionicons name="bookmark-outline" size={22} color={Couleurs.foret.principal} />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.boutonAction}
+                                    onPress={() => {
+                                        Alert.alert(
+                                            'Signaler',
+                                            'Signaler ce contenu comme fausse information ou inapproprié ? (5 signalements = verrouillage)',
+                                            [
+                                                { text: 'Annuler', style: 'cancel' },
+                                                {
+                                                    text: 'Signaler',
+                                                    style: 'destructive',
+                                                    onPress: () => mutationSignaler.mutate({ contenuId: id, motif: 'fausse_info' }),
+                                                },
+                                            ]
+                                        );
+                                    }}
+                                >
+                                    <Ionicons name="flag-outline" size={22} color={Couleurs.etat.attention} />
                                 </TouchableOpacity>
                             </View>
                         </View>

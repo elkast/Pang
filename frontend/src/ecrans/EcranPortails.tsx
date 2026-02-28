@@ -53,7 +53,7 @@ export default function EcranPortails() {
                             activeOpacity={0.85}
                         >
                             <Image
-                                source={{ uri: item.image_url || 'https://picsum.photos/800/400' }}
+                                source={{ uri: item.image_url || '' }}
                                 style={styles.image}
                             />
                             <View style={styles.overlay}>

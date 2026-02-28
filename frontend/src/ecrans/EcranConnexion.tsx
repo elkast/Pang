@@ -31,12 +31,13 @@ export default function EcranConnexion() {
 
     const gererConnexion = async () => {
         if (!email || !motDePasse) { setErreur('Veuillez remplir tous les champs.'); return; }
-        setChargement(true); setErreur('');
+        setChargement(true);
+        setErreur('');
         try {
             await seConnecter(email, motDePasse);
             navigation.replace('Principal');
-        } catch {
-            setErreur('Identifiants incorrects ou problème réseau.');
+        } catch (err: any) {
+            setErreur(err?.message || 'Identifiants incorrects ou API indisponible. Inscrivez-vous pour le mode hors-ligne.');
         } finally {
             setChargement(false);
         }

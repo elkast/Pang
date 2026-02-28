@@ -22,6 +22,7 @@ from routers import (
     admin_routeur,
     categories_routeur,
     promotions_routeur,
+    signalements_routeur,
 )
 
 
@@ -79,6 +80,7 @@ app.include_router(favoris_routeur)
 app.include_router(admin_routeur)
 app.include_router(categories_routeur)
 app.include_router(promotions_routeur)
+app.include_router(signalements_routeur)
 
 
 # ─── ROUTE RACINE ────────────────────────────────────────────────────────────

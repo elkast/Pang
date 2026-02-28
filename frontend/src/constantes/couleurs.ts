@@ -10,7 +10,7 @@ export const Couleurs = {
         doux: '#FCEBBF',
         moyen: '#F0C040',
         principal: '#E67E22',
-        fonce: '#D35400',
+        fonce: '#030303ff',
         profond: '#A04000',
     },
 

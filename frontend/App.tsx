@@ -14,7 +14,7 @@ import { AuthProvider } from './src/context/AuthContext';
 
 // Ignorer les warnings non-critiques de bibliothèques tierces
 LogBox.ignoreLogs([
-    'In React 18, SSRProvider is not necessary',
+    'In React 18, SSRProvider is not necessary and is a noop',
     'NativeBase:',
     'Warning: Each child in a list should have a unique',
 ]);

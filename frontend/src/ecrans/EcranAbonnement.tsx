@@ -17,7 +17,6 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Couleurs, Typographie, Rayons } from '../constantes';
 import { useAuthContext } from '../context/AuthContext';
-import api from '../api/client';
 
 const AVANTAGES = [
     { icone: 'lock-open-outline', label: 'Accès aux contenus premium', detail: 'Légendes rares, rituels secrets et sites sacrés' },
@@ -36,29 +35,11 @@ export default function EcranAbonnement() {
     const navigation = useNavigation<any>();
     const { utilisateur, recharger } = useAuthContext();
     const [planChoisi, setPlanChoisi] = React.useState('annuel');
-    const [chargement, setChargement] = React.useState(false);
 
-    const souscrire = async () => {
-        setChargement(true);
-        try {
-            // Simuler une souscription → en production : redirection vers paiement
-            await api.patch(`/admin/utilisateurs/${utilisateur?.id}`, { is_premium: true });
-            await recharger();
-            Alert.alert(
-                '🎉 Bienvenue en Premium !',
-                'Votre abonnement est activé. Profitez de tous les trésors culturels de Côte d\'Ivoire.',
-                [{ text: 'Explorer', onPress: () => navigation.navigate('Principal') }]
-            );
-        } catch {
-            // Fallback si API non disponible
-            Alert.alert(
-                '🌐 Paiement requis',
-                'Le système de paiement sera disponible prochainement.\n\nContactez-nous : premium@ivoculture.ci',
-                [{ text: 'OK' }]
-            );
-        } finally {
-            setChargement(false);
-        }
+    const souscrire = () => {
+        const plan = planChoisi === 'annuel' ? 'annuel' : 'mensuel';
+        const montant = planChoisi === 'annuel' ? 39900 : 4900;
+        navigation.navigate('Paiement', { montant, plan, utilisateur });
     };
 
     if (utilisateur?.is_premium) {
