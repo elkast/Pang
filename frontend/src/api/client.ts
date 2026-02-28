@@ -1,13 +1,15 @@
 // =============================================================================
-// IvoCulture — Client API Axios
+// — Client API Axios
 // Intercepteur JWT automatique sur toutes les requêtes
 // =============================================================================
 
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.169.86.196:8000/api';
+
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000/api',
+    baseURL: API_URL,
     timeout: 15000,
     headers: {
         'Content-Type': 'application/json',

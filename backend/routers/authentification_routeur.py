@@ -34,6 +34,7 @@ async def register(user: schemas.UserCreate, db: AsyncSession = Depends(get_db))
         telephone=user.telephone,
         pays=user.pays,
         ville=user.ville,
+        type_utilisateur=user.type_utilisateur,
         preferences=[],
     )
     db.add(new_user)

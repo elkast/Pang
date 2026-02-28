@@ -21,7 +21,7 @@ async def lister_mes_favoris(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Sert : EcranFavoris — retourne tous les contenus favoris de l'utilisateur."""
+    """Retourne tous les contenus favoris de l'utilisateur."""
     result = await db.execute(
         select(ContenuCulturel)
         .join(InteractionUtilisateur, InteractionUtilisateur.contenu_id == ContenuCulturel.id)
@@ -38,12 +38,10 @@ async def ajouter_aux_favoris(
     current_user: User = Depends(get_current_user),
 ):
     """Ajoute un contenu aux favoris (crée une interaction FAVORI)."""
-    # Vérifier l'existence du contenu
     res = await db.execute(select(ContenuCulturel).where(ContenuCulturel.id == contenu_id))
     if not res.scalars().first():
         raise HTTPException(status_code=404, detail="Contenu introuvable")
 
-    # Vérifier si déjà en favoris
     existant = await db.execute(
         select(InteractionUtilisateur)
         .where(InteractionUtilisateur.utilisateur_id == current_user.id)
@@ -82,4 +80,4 @@ async def retirer_des_favoris(
         raise HTTPException(status_code=404, detail="Ce contenu n'est pas dans vos favoris")
     await db.delete(favori)
     await db.commit()
-    return {"message": "Retiré des favoris"}
+    return {"message": "Retiré des favoris", "success": True}

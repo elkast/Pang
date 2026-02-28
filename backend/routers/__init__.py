@@ -9,3 +9,4 @@ from .profil_routeur import router as profil_routeur
 from .favoris_routeur import router as favoris_routeur
 from .admin_routeur import router as admin_routeur
 from .categories_routeur import router as categories_routeur
+from .promotions_routeur import router as promotions_routeur

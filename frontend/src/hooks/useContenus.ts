@@ -5,16 +5,37 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Alert } from 'react-native';
 import api from '../api/client';
+import {
+    CONTENUS_MOCK,
+    REGIONS_MOCK,
+    getContenusParType,
+    getContenuParId,
+    getRegionParId,
+    getContenusEnVedette,
+    type ContenuMock,
+    type RegionMock
+} from '../donnees/mockDonnees';
+
+// Fonction pour essayer l'API, avec fallback vers les données mock
+async function fetchWithFallback<T>(apiCall: () => Promise<T>, fallbackData: T): Promise<T> {
+    try {
+        return await apiCall();
+    } catch (error) {
+        console.log('API échouée, utilisation des données mock');
+        return fallbackData;
+    }
+}
 
 // Liste des contenus par type
 export function useContenusParType(typeContenu: string) {
     return useQuery({
         queryKey: ['contenus', typeContenu],
         queryFn: async () => {
-            const { data } = await api.get('/contenus/', {
-                params: { type_contenu: typeContenu },
-            });
-            return data;
+            const fallback = getContenusParType(typeContenu);
+            return fetchWithFallback(
+                () => api.get('/contenus/', { params: { type_contenu: typeContenu } }).then(r => r.data),
+                fallback as any
+            );
         },
     });
 }
@@ -24,8 +45,23 @@ export function useTousContenus() {
     return useQuery({
         queryKey: ['tous_contenus'],
         queryFn: async () => {
-            const { data } = await api.get('/contenus/');
-            return data;
+            return fetchWithFallback(
+                () => api.get('/contenus/').then(r => r.data),
+                CONTENUS_MOCK as any
+            );
+        },
+    });
+}
+
+// Contenus en vedette
+export function useContenusVedette() {
+    return useQuery({
+        queryKey: ['contenus_vedette'],
+        queryFn: async () => {
+            return fetchWithFallback(
+                () => api.get('/contenus/', { params: { featured: true } }).then(r => r.data),
+                getContenusEnVedette() as any
+            );
         },
     });
 }
@@ -35,8 +71,11 @@ export function useDetailContenu(id: number) {
     return useQuery({
         queryKey: ['contenu', id],
         queryFn: async () => {
-            const { data } = await api.get(`/contenus/${id}`);
-            return data;
+            const fallback = getContenuParId(id);
+            return fetchWithFallback(
+                () => api.get(`/contenus/${id}`).then(r => r.data),
+                fallback as any
+            );
         },
     });
 }
@@ -46,8 +85,10 @@ export function useRecommandations() {
     return useQuery({
         queryKey: ['recommandations'],
         queryFn: async () => {
-            const { data } = await api.get('/recommandations/');
-            return data;
+            return fetchWithFallback(
+                () => api.get('/recommandations/').then(r => r.data),
+                CONTENUS_MOCK as any
+            );
         },
     });
 }
@@ -57,8 +98,10 @@ export function useRegions() {
     return useQuery({
         queryKey: ['regions'],
         queryFn: async () => {
-            const { data } = await api.get('/regions/');
-            return data;
+            return fetchWithFallback(
+                () => api.get('/regions/').then(r => r.data),
+                REGIONS_MOCK as any
+            );
         },
     });
 }
@@ -68,8 +111,11 @@ export function useDetailRegion(regionId: number) {
     return useQuery({
         queryKey: ['region', regionId],
         queryFn: async () => {
-            const { data } = await api.get(`/regions/${regionId}`);
-            return data;
+            const fallback = getRegionParId(regionId);
+            return fetchWithFallback(
+                () => api.get(`/regions/${regionId}`).then(r => r.data),
+                fallback as any
+            );
         },
     });
 }
@@ -79,8 +125,11 @@ export function useContenusRegion(regionId: number) {
     return useQuery({
         queryKey: ['contenus_region', regionId],
         queryFn: async () => {
-            const { data } = await api.get(`/contenus/?region_id=${regionId}`);
-            return data;
+            const fallback = CONTENUS_MOCK.filter(c => c.region_id === regionId);
+            return fetchWithFallback(
+                () => api.get(`/contenus/?region_id=${regionId}`).then(r => r.data),
+                fallback as any
+            );
         },
     });
 }
@@ -90,8 +139,10 @@ export function useFavoris() {
     return useQuery({
         queryKey: ['mes_favoris'],
         queryFn: async () => {
-            const { data } = await api.get('/favoris/');
-            return data;
+            return fetchWithFallback(
+                () => api.get('/favoris/').then(r => r.data),
+                [] as any
+            );
         },
     });
 }

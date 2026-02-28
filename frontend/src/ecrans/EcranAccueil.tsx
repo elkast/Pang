@@ -3,7 +3,7 @@
 // Page principale : bannière, catégories, recommandations, régions
 // =============================================================================
 
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     View,
     Text,
@@ -12,14 +12,16 @@ import {
     Image,
     Dimensions,
     StyleSheet,
+    RefreshControl,
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Couleurs, Typographie, Rayons, CATEGORIES } from '../constantes';
 import { Chargement, CarteContenu } from '../composants';
 import { useRecommandations, useRegions } from '../hooks/useContenus';
+import { usePromotionsFeatured } from '../hooks/usePromotions';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 
 const { width } = Dimensions.get('window');
@@ -27,8 +29,30 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export default function EcranAccueil() {
     const navigation = useNavigation<Nav>();
-    const { data: recommandations, isLoading: chargementReco } = useRecommandations();
-    const { data: regions } = useRegions();
+    const [refreshing, setRefreshing] = useState(false);
+
+    // Utiliser useFocusEffect pour rafraîchir les données à chaque affichage
+    useFocusEffect(
+        useCallback(() => {
+            // Les données seront automatiquement rafraîchies grâce à React Query
+        }, [])
+    );
+
+    const { data: recommandations, isLoading: chargementReco, refetch: refreshReco } = useRecommandations();
+    const { data: regions, refetch: refreshRegions } = useRegions();
+    const { data: promotionsFeatured } = usePromotionsFeatured();
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        try {
+            await Promise.all([
+                refreshReco(),
+                refreshRegions()
+            ]);
+        } finally {
+            setRefreshing(false);
+        }
+    }, [refreshReco, refreshRegions]);
 
     const allerVersCategorie = (typeContenu: string) => {
         navigation.navigate('Categorie', { typeContenu });
@@ -36,7 +60,18 @@ export default function EcranAccueil() {
 
     return (
         <View style={styles.conteneur}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={Couleurs.accent.principal}
+                        colors={[Couleurs.accent.principal]}
+                    />
+                }
+            >
                 {/* En-tête */}
                 <Animated.View entering={FadeInDown.duration(500)}>
                     <View style={styles.entete}>
@@ -61,8 +96,9 @@ export default function EcranAccueil() {
                         activeOpacity={0.9}
                     >
                         <Image
-                            source={{ uri: 'https://images.unsplash.com/photo-1542104473-ebcf1d44005e?w=800' }}
+                            source={{ uri: 'https://images.unsplash.com/photo-1516617171622-32994d23f543?w=800' }}
                             style={styles.imageBanniere}
+                            resizeMode="cover"
                         />
                         <View style={styles.overlayBanniere}>
                             <Text style={styles.badgeBanniere}>DÉCOUVERTE</Text>
@@ -73,6 +109,43 @@ export default function EcranAccueil() {
                         </View>
                     </TouchableOpacity>
                 </Animated.View>
+
+                {/* Promotions à la Une */}
+                {promotionsFeatured && promotionsFeatured.length > 0 && (
+                    <Animated.View entering={FadeInDown.delay(150).duration(500)}>
+                        <View style={styles.section}>
+                            <View style={styles.ligneTitre}>
+                                <Text style={styles.titreSection}>✨ À la Une</Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('Principal')}>
+                                    <Text style={styles.voirTout}>Voir tout</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -20 }} contentContainerStyle={{ paddingHorizontal: 20 }}>
+                                {promotionsFeatured.map((promo: any) => (
+                                    <TouchableOpacity
+                                        key={promo.id}
+                                        style={styles.cartePromotion}
+                                        onPress={() => navigation.navigate('DetailPromotion', { id: promo.id })}
+                                        activeOpacity={0.85}
+                                    >
+                                        <Image
+                                            source={{ uri: promo.image_url || 'https://picsum.photos/300/200' }}
+                                            style={styles.imagePromotion}
+                                            resizeMode="cover"
+                                        />
+                                        <View style={styles.overlayPromotion}>
+                                            <View style={styles.badgePopularite}>
+                                                <Text style={styles.texteBadgePopularite}>★ {promo.note_popularite}</Text>
+                                            </View>
+                                            <Text style={styles.titrePromotion} numberOfLines={2}>{promo.titre}</Text>
+                                            <Text style={styles.typePromotion}>{promo.type_promotion?.toUpperCase()}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                        </View>
+                    </Animated.View>
+                )}
 
                 {/* Catégories */}
                 <Animated.View entering={FadeInDown.delay(200).duration(500)}>
@@ -103,7 +176,7 @@ export default function EcranAccueil() {
                     </View>
                 </Animated.View>
 
-                {/* Recommandations */}
+                {/* Recommandations avec images mieux recadrées */}
                 <Animated.View entering={FadeInDown.delay(400).duration(500)}>
                     <View style={styles.section}>
                         <View style={styles.ligneTitre}>
@@ -115,14 +188,71 @@ export default function EcranAccueil() {
                         {chargementReco ? (
                             <Chargement message="" taille="small" pleinEcran={false} />
                         ) : (
-                            recommandations?.slice(0, 4).map((contenu: any, index: number) => (
-                                <CarteContenu
-                                    key={contenu.id}
-                                    contenu={contenu}
-                                    index={index}
-                                    onPress={() => navigation.navigate('DetailContenu', { id: contenu.id })}
-                                />
-                            ))
+                            <>
+                                {/* Grande carte pour le premier contenu */}
+                                {recommandations && recommandations.length > 0 && (
+                                    <TouchableOpacity
+                                        style={styles.uneReco}
+                                        onPress={() => navigation.navigate('DetailContenu', { id: recommandations[0].id })}
+                                        activeOpacity={0.9}
+                                    >
+                                        <Image
+                                            source={{ uri: recommandations[0].image_url || 'https://picsum.photos/600/400' }}
+                                            style={styles.imageUneReco}
+                                            resizeMode="cover"
+                                        />
+                                        <View style={styles.overlayUneReco}>
+                                            <View style={[styles.badgeReco, { backgroundColor: Couleurs.accent.principal }]}>
+                                                <Text style={styles.texteBadgeReco}>
+                                                    {recommandations[0].type_contenu?.toUpperCase()}
+                                                </Text>
+                                            </View>
+                                            <Text style={styles.titreUneReco} numberOfLines={2}>
+                                                {recommandations[0].titre}
+                                            </Text>
+                                            <Text style={styles.descUneReco} numberOfLines={2}>
+                                                {recommandations[0].description}
+                                            </Text>
+                                            <View style={styles.statsUneReco}>
+                                                <View style={styles.statItem}>
+                                                    <Ionicons name="eye" size={14} color="#FFF" />
+                                                    <Text style={styles.statText}>{recommandations[0].vues || 0}</Text>
+                                                </View>
+                                                <View style={styles.statItem}>
+                                                    <Ionicons name="heart" size={14} color="#FFF" />
+                                                    <Text style={styles.statText}>{recommandations[0].likes || 0}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                )}
+
+                                {/* Autres recommandations en grille */}
+                                <View style={styles.grilleRecos}>
+                                    {recommandations?.slice(1, 4).map((contenu: any, index: number) => (
+                                        <TouchableOpacity
+                                            key={contenu.id}
+                                            style={styles.carteReco}
+                                            onPress={() => navigation.navigate('DetailContenu', { id: contenu.id })}
+                                            activeOpacity={0.85}
+                                        >
+                                            <Image
+                                                source={{ uri: contenu.image_url || 'https://picsum.photos/300/200' }}
+                                                style={styles.imageCarteReco}
+                                                resizeMode="cover"
+                                            />
+                                            <View style={styles.overlayCarteReco}>
+                                                <Text style={styles.titreCarteReco} numberOfLines={2}>
+                                                    {contenu.titre}
+                                                </Text>
+                                                <Text style={styles.sousTitreCarteReco} numberOfLines={1}>
+                                                    {contenu.vues || 0} vues
+                                                </Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </>
                         )}
                     </View>
                 </Animated.View>
@@ -152,6 +282,7 @@ export default function EcranAccueil() {
                                     <Image
                                         source={{ uri: region.image_url || 'https://picsum.photos/300/200' }}
                                         style={styles.imageRegion}
+                                        resizeMode="cover"
                                     />
                                     <View style={styles.overlayRegion}>
                                         <Text style={styles.nomRegion}>{region.nom}</Text>
@@ -184,6 +315,9 @@ const styles = StyleSheet.create({
     conteneur: {
         flex: 1,
         backgroundColor: Couleurs.fond.primaire,
+    },
+    scrollContent: {
+        flexGrow: 1,
     },
     entete: {
         flexDirection: 'row',
@@ -301,6 +435,141 @@ const styles = StyleSheet.create({
     descCategorie: {
         color: Couleurs.texte.secondaire,
         fontSize: Typographie.tailles.sm,
+        marginTop: 2,
+    },
+
+    // Recommandations - Grande carte
+    uneReco: {
+        height: 220,
+        borderRadius: Rayons.xl,
+        overflow: 'hidden',
+        marginBottom: 12,
+    },
+    imageUneReco: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+    },
+    overlayUneReco: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'flex-end',
+        padding: 16,
+    },
+    badgeReco: {
+        alignSelf: 'flex-start',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 12,
+        marginBottom: 8,
+    },
+    texteBadgeReco: {
+        color: '#FFF',
+        fontSize: 10,
+        fontWeight: '700',
+        letterSpacing: 0.5,
+    },
+    titreUneReco: {
+        color: '#FFF',
+        fontSize: Typographie.tailles.xl,
+        fontWeight: Typographie.poids.bold,
+        marginBottom: 4,
+    },
+    descUneReco: {
+        color: 'rgba(255,255,255,0.85)',
+        fontSize: Typographie.tailles.sm,
+        lineHeight: 18,
+    },
+    statsUneReco: {
+        flexDirection: 'row',
+        gap: 16,
+        marginTop: 8,
+    },
+    statItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+    },
+    statText: {
+        color: '#FFF',
+        fontSize: Typographie.tailles.sm,
+    },
+
+    // Grille des autres reco
+    grilleRecos: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+    },
+    carteReco: {
+        width: (width - 52) / 2,
+        height: 140,
+        borderRadius: Rayons.lg,
+        overflow: 'hidden',
+        marginBottom: 12,
+    },
+    imageCarteReco: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+    },
+    overlayCarteReco: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'flex-end',
+        padding: 10,
+    },
+    titreCarteReco: {
+        color: '#FFF',
+        fontSize: Typographie.tailles.md,
+        fontWeight: Typographie.poids.semiBold,
+    },
+    sousTitreCarteReco: {
+        color: 'rgba(255,255,255,0.8)',
+        fontSize: Typographie.tailles.xs,
+        marginTop: 2,
+    },
+
+    // Promotions
+    cartePromotion: {
+        width: 200,
+        height: 150,
+        borderRadius: Rayons.lg,
+        overflow: 'hidden',
+        marginRight: 12,
+    },
+    imagePromotion: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+    },
+    overlayPromotion: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.45)',
+        justifyContent: 'flex-end',
+        padding: 12,
+    },
+    badgePopularite: {
+        alignSelf: 'flex-start',
+        backgroundColor: Couleurs.accent.principal,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderRadius: 20,
+        marginBottom: 6,
+    },
+    texteBadgePopularite: {
+        color: '#FFF',
+        fontSize: 10,
+        fontWeight: '700',
+    },
+    titrePromotion: {
+        color: '#FFF',
+        fontSize: Typographie.tailles.md,
+        fontWeight: Typographie.poids.bold,
+    },
+    typePromotion: {
+        color: 'rgba(255,255,255,0.75)',
+        fontSize: Typographie.tailles.xs,
         marginTop: 2,
     },
     // Régions

@@ -1,56 +1,58 @@
 // =============================================================================
 // IvoCulture — Écran Splash (Démarrage)
-// Animation logo + vérification token JWT → redirection intelligente
+// Animation logo → redirection intelligente selon token/onboarding
+// THÈME CLAIR — fond blanc/crème
 // =============================================================================
 
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
     FadeIn,
+    FadeInUp,
     useSharedValue,
     useAnimatedStyle,
-    withRepeat,
     withTiming,
+    withRepeat,
     withSequence,
-    FadeInUp,
+    Easing,
 } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Couleurs, Typographie } from '../constantes';
-import { Chargement } from '../composants';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 
-type NavigationSplash = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
+type Nav = NativeStackNavigationProp<RootStackParamList, 'Splash'>;
 
 export default function EcranSplash() {
-    const navigation = useNavigation<NavigationSplash>();
-    const echelle = useSharedValue(0.8);
-    const opaciteSousTitre = useSharedValue(0);
+    const navigation = useNavigation<Nav>();
+    const echelle = useSharedValue(0.85);
+    const rotation = useSharedValue(0);
 
     useEffect(() => {
-        // Animation pulsation logo
+        // Animation douce pulsation
         echelle.value = withSequence(
-            withTiming(1, { duration: 800 }),
-            withRepeat(withTiming(1.05, { duration: 1200 }), -1, true)
+            withTiming(1, { duration: 700, easing: Easing.out(Easing.cubic) }),
+            withRepeat(
+                withSequence(
+                    withTiming(1.04, { duration: 1400, easing: Easing.inOut(Easing.sin) }),
+                    withTiming(1, { duration: 1400, easing: Easing.inOut(Easing.sin) })
+                ),
+                -1,
+                false
+            )
         );
 
-        // Apparition sous-titre
-        setTimeout(() => {
-            opaciteSousTitre.value = withTiming(1, { duration: 600 });
-        }, 600);
-
-        // Vérification état authentification
-        const verifier = async () => {
-            await new Promise(r => setTimeout(r, 2500));
+        // Redirection après animation
+        const timer = setTimeout(async () => {
             let aVuOnboarding = null;
             let token = null;
-
             try {
                 aVuOnboarding = await AsyncStorage.getItem('onboarding_vu');
                 token = await AsyncStorage.getItem('token');
             } catch {
-                // Storage non disponible en mode web/dev - continuer silencieusement
+                // Storage indisponible en dev
             }
 
             if (!aVuOnboarding) {
@@ -58,47 +60,51 @@ export default function EcranSplash() {
             } else if (token) {
                 navigation.replace('Principal');
             } else {
-                navigation.replace('Connexion');
+                navigation.replace('ChoixProfil');
             }
-        };
-        verifier();
+        }, 2200);
+
+        return () => clearTimeout(timer);
     }, []);
 
     const styleLogo = useAnimatedStyle(() => ({
         transform: [{ scale: echelle.value }],
     }));
 
-    const styleSousTitre = useAnimatedStyle(() => ({
-        opacity: opaciteSousTitre.value,
-    }));
-
     return (
         <View style={styles.conteneur}>
-            {/* Cercle décoratif flou */}
-            <View style={styles.cercleDecoratif} />
+            <StatusBar barStyle="dark-content" backgroundColor={Couleurs.fond.primaire} />
 
-            {/* Logo principal */}
-            <Animated.View style={styleLogo} entering={FadeIn.duration(800)}>
+            {/* Cercles décoratifs en fond */}
+            <View style={[styles.cercle, styles.cercle1]} />
+            <View style={[styles.cercle, styles.cercle2]} />
+
+            {/* Logo centré */}
+            <Animated.View style={[styleLogo]} entering={FadeIn.duration(600)}>
                 <View style={styles.logoConteneur}>
-                    <Text style={styles.logoIcone}>🏛️</Text>
+                    <View style={styles.iconeBadge}>
+                        <Text style={styles.logoIcone}>🏛️</Text>
+                    </View>
                     <Text style={styles.logoTexte}>IvoCulture</Text>
+                    <Text style={styles.logoSousTitre}>L'âme de la Côte d'Ivoire</Text>
                 </View>
             </Animated.View>
 
-            {/* Sous-titre */}
-            <Animated.View style={styleSousTitre}>
-                <Text style={styles.sousTitre}>L'âme de la Côte d'Ivoire</Text>
-            </Animated.View>
-
-            {/* Spinner en bas */}
-            <Animated.View entering={FadeInUp.delay(1200).duration(500)} style={styles.bas}>
-                <Chargement
-                    message=""
-                    couleur={Couleurs.accent.principal}
-                    taille="small"
-                    pleinEcran={false}
-                />
-                <Text style={styles.version}>Version 1.0.0</Text>
+            {/* Indicateur de chargement et version */}
+            <Animated.View
+                entering={FadeInUp.delay(600).duration(500)}
+                style={styles.bas}
+            >
+                <View style={styles.pointsConteneur}>
+                    {[0, 1, 2].map((i) => (
+                        <Animated.View
+                            key={i}
+                            entering={FadeIn.delay(800 + i * 150).duration(400)}
+                            style={[styles.point, { backgroundColor: Couleurs.accent.principal }]}
+                        />
+                    ))}
+                </View>
+                <Text style={styles.version}>v1.0.0</Text>
             </Animated.View>
         </View>
     );
@@ -107,46 +113,82 @@ export default function EcranSplash() {
 const styles = StyleSheet.create({
     conteneur: {
         flex: 1,
-        backgroundColor: Couleurs.foret.profond,
+        backgroundColor: Couleurs.fond.primaire,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    cercleDecoratif: {
+    // Cercles décoratifs subtils
+    cercle: {
         position: 'absolute',
-        width: 300,
-        height: 300,
-        borderRadius: 150,
-        backgroundColor: Couleurs.accent.principal,
-        opacity: 0.05,
-        top: '20%',
+        borderRadius: 999,
+        opacity: 0.07,
     },
+    cercle1: {
+        width: 320,
+        height: 320,
+        backgroundColor: Couleurs.accent.principal,
+        top: -60,
+        right: -60,
+    },
+    cercle2: {
+        width: 250,
+        height: 250,
+        backgroundColor: Couleurs.foret.principal,
+        bottom: -40,
+        left: -60,
+    },
+    // Logo
     logoConteneur: {
         alignItems: 'center',
     },
+    iconeBadge: {
+        width: 100,
+        height: 100,
+        borderRadius: 28,
+        backgroundColor: Couleurs.or.clair,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+        shadowColor: Couleurs.accent.principal,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 20,
+        elevation: 8,
+    },
     logoIcone: {
-        fontSize: 64,
-        marginBottom: 12,
+        fontSize: 52,
     },
     logoTexte: {
-        color: Couleurs.or.principal,
-        fontSize: 42,
+        color: Couleurs.texte.primaire,
+        fontSize: 38,
         fontWeight: '800',
-        letterSpacing: 2,
+        letterSpacing: 1,
     },
-    sousTitre: {
-        color: Couleurs.foret.moyen,
-        fontSize: Typographie.tailles.xl,
-        fontWeight: Typographie.poids.medium,
+    logoSousTitre: {
+        color: Couleurs.texte.secondaire,
+        fontSize: Typographie.tailles.lg,
+        fontWeight: '500',
         marginTop: 8,
+        letterSpacing: 0.3,
     },
+    // Bas
     bas: {
         position: 'absolute',
-        bottom: 60,
+        bottom: 48,
         alignItems: 'center',
+        gap: 12,
+    },
+    pointsConteneur: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    point: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
     },
     version: {
         color: Couleurs.texte.desactive,
-        fontSize: Typographie.tailles.sm,
-        marginTop: 8,
+        fontSize: Typographie.tailles.xs,
     },
 });

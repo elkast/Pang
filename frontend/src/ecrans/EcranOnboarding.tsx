@@ -98,7 +98,7 @@ export default function EcranOnboarding() {
         } catch {
             // Ignorer les erreurs storage en mode web/dev
         }
-        navigation.replace('Connexion');
+        navigation.replace('ChoixProfil');
     };
 
     const renderPage = ({ item, index }: { item: PageOnboarding; index: number }) => (

@@ -1,0 +1,163 @@
+# IvoCulture — Gestion de Projet Agile (3 Étudiants)
+
+**Durée totale :** 4 semaines | **Méthodologie :** Scrum simplifié
+**Réunions :** Stand-up 15 min chaque matin | Sprint review + retro chaque vendredi
+
+---
+
+## Équipe et Rôles
+
+| Étudiant | Rôle | Responsabilités |
+|----------|------|----------------|
+| **Étudiant A** | Scrum Master + Backend | API FastAPI, BDD, routeurs, déploiement |
+| **Étudiant B** | Product Owner + Frontend Auth | Navigation, Connexion, Inscription, Profil |
+| **Étudiant C** | Frontend Culture + UI | Accueil, Promotions, Admin, Design |
+
+---
+
+## User Stories (Backlog Produit)
+
+| ID | En tant que… | Je veux… | Priorité | Points |
+|----|-------------|----------|----------|--------|
+| US-01 | Visiteur | Choisir mon profil (Local/Touriste) à l'entrée | 🔴 Critique | 3 |
+| US-02 | Local | Me connecter avec email/mot de passe | 🔴 Critique | 2 |
+| US-03 | Touriste | Me connecter avec l'écran dédié touriste | 🔴 Critique | 2 |
+| US-04 | Utilisateur | M'inscrire avec mon type (local/touriste) | 🔴 Critique | 3 |
+| US-05 | Utilisateur | Voir les contenus culturels sur l'accueil | 🔴 Critique | 5 |
+| US-06 | Utilisateur | Voir les promotions en vedette | 🟠 Haute | 3 |
+| US-07 | Utilisateur | Voir le détail d'un contenu/promotion | 🟠 Haute | 3 |
+| US-08 | Touriste | Souscrire à l'offre premium | 🟠 Haute | 5 |
+| US-09 | Admin | Gérer les utilisateurs (rôles, statuts) | 🟠 Haute | 5 |
+| US-10 | Admin | Gérer les contenus (publier, featured) | 🟠 Haute | 5 |
+| US-11 | Admin | Gérer les promotions (CRUD) | 🟡 Moyenne | 5 |
+| US-12 | Admin | Gérer les régions (CRUD) | 🟡 Moyenne | 3 |
+| US-13 | Contributeur | Soumettre un nouveau contenu | 🟡 Moyenne | 5 |
+| US-14 | Utilisateur | Voir ses favoris | 🟢 Basse | 2 |
+| US-15 | Utilisateur | Déconnexion sécurisée | 🟢 Basse | 1 |
+
+---
+
+## Sprint 1 — Fondations (Semaine 1)
+
+**Objectif :** L'application démarre, l'authentification fonctionne de bout en bout.
+
+| Tâche | Assigné | Statut |
+|-------|---------|--------|
+| Setup backend + BDD SQLite | A | ✅ Fait |
+| Modèles User, Contenu, Region | A | ✅ Fait |
+| Endpoints `/auth/login`, `/auth/register` | A | ✅ Fait |
+| Écran Splash + Onboarding | B | ✅ Fait |
+| **Écran ChoixProfil (Local/Touriste)** | B | ✅ Fait |
+| Écran ConnexionLocal + ConnexionTouriste | B | ✅ Fait |
+| Écran Inscription avec type_utilisateur | B | ✅ Fait |
+| Hook useAuth + AsyncStorage (JWT) | B | ✅ Fait |
+| Navigation principale (AppNavigator) | C | ✅ Fait |
+| Thème blanc/orange (couleurs.ts) | C | ✅ Fait |
+
+**Critères de validation Sprint 1 :**
+- [ ] On peut s'inscrire via l'app mobile
+- [ ] On peut se connecter depuis l'écran Local OU Touriste
+- [ ] Le token JWT est stocké localement
+
+---
+
+## Sprint 2 — Contenus Culturels (Semaine 2)
+
+**Objectif :** Les contenus s'affichent, la navigation est fluide.
+
+| Tâche | Assigné | Statut |
+|-------|---------|--------|
+| Endpoints `/contenus`, `/regions`, `/categories` | A | ✅ Fait |
+| Gestion contenu premium (accès filtré) | A | ⬜ À faire |
+| Écran Accueil avec catégories + régions | C | ✅ Fait |
+| Section "À la Une" (promotions featured) | C | ✅ Fait |
+| Écran Détail Contenu | C | ✅ Fait |
+| Écran Découverte + Catégorie | C | ✅ Fait |
+| Onglets de navigation (TabNavigateur) | B | ✅ Fait |
+| Écran Promotions + Détail Promotion | C | ✅ Fait |
+| Pull-to-refresh sur l'accueil | C | ✅ Fait |
+| Mock data fallback (mockDonnees.ts) | B | ✅ Fait |
+
+**Critères de validation Sprint 2 :**
+- [ ] L'accueil affiche des contenus réels ou mock
+- [ ] La navigation entre onglets fonctionne
+- [ ] Tap sur un contenu → écran détail
+
+---
+
+## Sprint 3 — Admin & Modèle Économique (Semaine 3)
+
+**Objectif :** L'admin peut gérer la plateforme, le touriste peut souscrire.
+
+| Tâche | Assigné | Statut |
+|-------|---------|--------|
+| Routeur admin (stats, CRUD utilisateurs, contenus) | A | ✅ Fait |
+| Routeur promotions (CRUD complet) | A | ✅ Fait |
+| Endpoint toggle is_premium | A | ⬜ À faire |
+| Dashboard Admin (EcranAdmin) | C | ✅ Fait |
+| Écran Admin Utilisateurs (rôles, statuts) | C | ✅ Fait |
+| Écran Admin Contenus (publier, featured) | C | ✅ Fait |
+| Écran Admin Régions (CRUD inline) | C | ✅ Fait |
+| Écran Admin Promotions (CRUD + featured) | C | ✅ Fait |
+| Hook useAdmin (toutes mutations) | B | ✅ Fait |
+| Écran Abonnement Premium (touriste) | B | ✅ Fait |
+| Onglet Admin conditionnel (is_admin) | B | ✅ Fait |
+
+**Critères de validation Sprint 3 :**
+- [ ] Un admin voit l'onglet Admin dans la navigation
+- [ ] L'admin peut basculer le statut d'un utilisateur
+- [ ] Un touriste voit le bouton "Passer en Premium"
+
+---
+
+## Sprint 4 — Finalisation & Déploiement (Semaine 4)
+
+**Objectif :** L'application est stable, documentée et déployable.
+
+| Tâche | Assigné | Statut |
+|-------|---------|--------|
+| Script setup_network.py (IP + pare-feu) | A | ✅ Fait |
+| Seeding base de données (données demo) | A | ⬜ À faire |
+| Écran Contribution (formulaire + upload) | B | ⬜ À faire |
+| Écran Favoris fonctionnel (API) | B | ⬜ À faire |
+| Gestion erreurs globale + toasts | B | ⬜ À faire |
+| Tests des endpoints backend (manuel) | A | ⬜ À faire |
+| Tests de navigation frontend (manuel) | C | ⬜ À faire |
+| Documentation README.md | A+B+C | ⬜ À faire |
+| Build APK Expo (android) | C | ⬜ À faire |
+| Présentation / Demo | A+B+C | ⬜ À faire |
+
+**Critères de validation Sprint 4 :**
+- [ ] [setup_network.py](file:///C:/niveau2/setup_network.py) configure l'IP automatiquement
+- [ ] L'app fonctionne sur un vrai téléphone Android
+- [ ] La demo complète dure moins de 5 minutes
+
+---
+
+## Conventions Techniques
+
+```
+main   ← branche de production
+dev    ← branche d'intégration
+feat/  ← fonctionnalités (feat/ecran-admin-users)
+fix/   ← corrections (fix/jwt-expiry)
+```
+
+**Commits :** `type(scope): message` — ex: [feat(auth): add tourist login screen](file:///C:/niveau2/backend/routers/admin_routeur.py#248-262)
+
+**Definition of Done :**
+- Code revu par 1 autre étudiant (PR)
+- Aucune erreur TypeScript
+- Testé sur Android Expo Go
+- Mis à jour dans ce tableau
+
+---
+
+## Réunions & Cadence
+
+| Évènement | Quand | Durée | Qui |
+|-----------|-------|-------|-----|
+| Stand-up | Chaque matin | 15 min | Tous |
+| Sprint Review | Vendredi 17h | 30 min | Tous |
+| Rétrospective | Vendredi 17h30 | 20 min | Tous |
+| Sprint Planning | Lundi matin | 45 min | Tous |

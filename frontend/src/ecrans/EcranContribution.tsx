@@ -21,6 +21,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Couleurs, Typographie, Rayons, TYPES_CONTENU_FORMULAIRE } from '../constantes';
 import { EnteteEcran, ChampSaisie, BoutonPrincipal } from '../composants';
 import { useCreerContenu, useRegions } from '../hooks/useContenus';
+import { useAuthContext } from '../context/AuthContext';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -29,6 +30,7 @@ export default function EcranContribution() {
     const navigation = useNavigation<Nav>();
     const { data: regions } = useRegions();
     const mutation = useCreerContenu();
+    const { estConnecte } = useAuthContext();
 
     const [titre, setTitre] = useState('');
     const [typeContenu, setTypeContenu] = useState('');
@@ -38,6 +40,22 @@ export default function EcranContribution() {
     const [etape, setEtape] = useState(1);
 
     const soumettre = () => {
+        // Check if user is connected
+        if (!estConnecte) {
+            Alert.alert(
+                'Connexion requise',
+                'Vous devez être connecté pour publier un contenu.',
+                [
+                    { text: 'Annuler', style: 'cancel' },
+                    {
+                        text: 'Se connecter',
+                        onPress: () => navigation.navigate('Connexion')
+                    },
+                ]
+            );
+            return;
+        }
+
         if (!titre || !typeContenu || !description) {
             Alert.alert('Champs manquants', 'Veuillez remplir le titre, le type et la description.');
             return;

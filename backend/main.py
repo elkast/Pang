@@ -21,6 +21,7 @@ from routers import (
     favoris_routeur,
     admin_routeur,
     categories_routeur,
+    promotions_routeur,
 )
 
 
@@ -40,7 +41,7 @@ async def duree_de_vie(app: FastAPI):
 app = FastAPI(
     title="IvoCulture API",
     description="API intelligente pour la présentation et transmission de la culture ivoirienne.",
-    version="1.0.0",
+    version="2.0.0",
     lifespan=duree_de_vie,
 )
 
@@ -77,6 +78,7 @@ app.include_router(profil_routeur)
 app.include_router(favoris_routeur)
 app.include_router(admin_routeur)
 app.include_router(categories_routeur)
+app.include_router(promotions_routeur)
 
 
 # ─── ROUTE RACINE ────────────────────────────────────────────────────────────
@@ -84,4 +86,4 @@ app.include_router(categories_routeur)
 
 @app.get("/", tags=["Santé"])
 async def racine():
-    return {"message": "Bienvenue sur l'API IvoCulture", "version": "1.0.0"}
+    return {"message": "Bienvenue sur l'API IvoCulture", "version": "2.0.0"}

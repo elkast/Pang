@@ -1,5 +1,5 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { tokenStorage } from '../src/utils/tokenStorage';
 
 // URL de l'API - IP locale de l'ordinateur: 10.169.86.15
 // Pour React Native mobile (téléphone physique)
@@ -17,7 +17,7 @@ const api = axios.create({
 api.interceptors.request.use(
     async (config) => {
         try {
-            const token = await AsyncStorage.getItem('token');
+            const token = await tokenStorage.getToken();
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
@@ -37,7 +37,7 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             // Token expiré ou invalide - nettoyer le stockage
-            AsyncStorage.removeItem('token');
+            tokenStorage.removeToken();
         }
         return Promise.reject(error);
     }

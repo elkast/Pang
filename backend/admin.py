@@ -1,5 +1,5 @@
 # =============================================================================
-# — Interface d'administration professionnelle (SQLAdmin)
+# IvoCulture — Interface d'administration SQLAdmin
 # Accès : http://localhost:8000/admin
 # =============================================================================
 
@@ -7,7 +7,7 @@ import os
 from sqladmin import Admin, ModelView
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
-from models import User, Region, ContenuCulturel, InteractionUtilisateur
+from models import User, Region, ContenuCulturel, InteractionUtilisateur, Promotion
 from database import engine
 from fastapi import FastAPI
 
@@ -40,7 +40,7 @@ class UtilisateurAdmin(ModelView, model=User):
     name = "Utilisateur"
     name_plural = "Utilisateurs"
     icon = "fa-solid fa-users"
-    column_list = [User.id, User.username, User.email, User.is_premium, User.created_at]
+    column_list = [User.id, User.username, User.email, User.type_utilisateur, User.is_premium, User.created_at]
     column_searchable_list = [User.username, User.email]
     column_sortable_list = [User.id, User.username, User.email, User.created_at]
     column_default_sort = [(User.created_at, True)]
@@ -77,6 +77,7 @@ class ContenuAdmin(ModelView, model=ContenuCulturel):
         ContenuCulturel.region_id,
         ContenuCulturel.vues,
         ContenuCulturel.likes,
+        ContenuCulturel.is_published,
     ]
     column_searchable_list = [ContenuCulturel.titre, ContenuCulturel.type_contenu]
     column_sortable_list = [
@@ -117,6 +118,29 @@ class InteractionAdmin(ModelView, model=InteractionUtilisateur):
     page_size = 25
 
 
+class PromotionAdmin(ModelView, model=Promotion):
+    name = "Promotion"
+    name_plural = "Promotions"
+    icon = "fa-solid fa-star"
+    column_list = [
+        Promotion.id,
+        Promotion.titre,
+        Promotion.type_promotion,
+        Promotion.numero_contact,
+        Promotion.note_popularite,
+        Promotion.is_active,
+        Promotion.created_at,
+    ]
+    column_searchable_list = [Promotion.titre, Promotion.type_promotion]
+    column_sortable_list = [Promotion.id, Promotion.titre, Promotion.note_popularite]
+    column_default_sort = [(Promotion.note_popularite, True)]
+    can_create = True
+    can_edit = True
+    can_delete = True
+    can_view_details = True
+    page_size = 25
+
+
 # ─── MONTAGE DU PANEL ───────────────────────────────────────────────────────
 
 def setup_admin(app: FastAPI):
@@ -127,4 +151,5 @@ def setup_admin(app: FastAPI):
     admin.add_view(RegionAdmin)
     admin.add_view(ContenuAdmin)
     admin.add_view(InteractionAdmin)
+    admin.add_view(PromotionAdmin)
     return admin

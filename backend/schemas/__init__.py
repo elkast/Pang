@@ -13,17 +13,18 @@ from enum import Enum
 
 
 class RoleUtilisateur(str, Enum):
-    """Rôles disponibles pour les utilisateurs"""
-
     EXPLORATEUR = "explorateur"
     CONTRIBUTEUR = "contributeur"
     GARDIEN = "gardien"
     ADMIN = "admin"
 
 
-class TypeContenu(str, Enum):
-    """Types de contenus culturels"""
+class TypeUtilisateur(str, Enum):
+    LOCAL = "local"
+    TOURISTE = "touriste"
 
+
+class TypeContenu(str, Enum):
     MASQUE = "masque"
     GASTRONOMIE = "gastronomie"
     LEGENDE = "legende"
@@ -33,6 +34,14 @@ class TypeContenu(str, Enum):
     CONTE = "conte"
     DANSE = "danse"
     ART = "art"
+
+
+class TypePromotion(str, Enum):
+    SITE = "site"
+    MOSQUEE = "mosquee"
+    MUSIQUE = "musique"
+    LEGENDE = "legende"
+    TOURISTE = "touriste"
 
 
 # ─── UTILISATEURS ────────────────────────────────────────────────────────────
@@ -46,6 +55,7 @@ class UserCreate(BaseModel):
     telephone: Optional[str] = None
     pays: Optional[str] = "Côte d'Ivoire"
     ville: Optional[str] = None
+    type_utilisateur: TypeUtilisateur = TypeUtilisateur.LOCAL
 
 
 class UserOut(BaseModel):
@@ -59,6 +69,7 @@ class UserOut(BaseModel):
     telephone: Optional[str] = None
     pays: Optional[str] = None
     ville: Optional[str] = None
+    type_utilisateur: TypeUtilisateur = TypeUtilisateur.LOCAL
     is_premium: bool = False
     is_admin: bool = False
     is_active: bool = True
@@ -80,8 +91,6 @@ class UserUpdate(BaseModel):
 
 
 class UserAdminUpdate(BaseModel):
-    """Mise à jour admin - peut changer le rôle et le statut"""
-
     username: Optional[str] = None
     nom_complet: Optional[str] = None
     email: Optional[str] = None
@@ -89,6 +98,7 @@ class UserAdminUpdate(BaseModel):
     is_admin: Optional[bool] = None
     is_active: Optional[bool] = None
     role: Optional[RoleUtilisateur] = None
+    type_utilisateur: Optional[TypeUtilisateur] = None
 
 
 # ─── TOKENS JWT ──────────────────────────────────────────────────────────────
@@ -111,7 +121,7 @@ class RegionBase(BaseModel):
     nom: str
     description: str
     image_url: str
-    couleur_theme: str = "#1E6B45"
+    couleur_theme: str = "#E67E22"
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     population: Optional[str] = None
@@ -164,6 +174,7 @@ class ContenuBase(BaseModel):
     metadata_extra: Dict[str, Any] = {}
     region_id: Optional[int] = None
     categorie_id: Optional[int] = None
+    is_premium: bool = False
 
 
 class ContenuCreate(ContenuBase):
@@ -178,6 +189,46 @@ class ContenuOut(ContenuBase):
     likes: int = 0
     is_published: bool = True
     is_featured: bool = False
+    created_at: Optional[datetime] = None
+
+
+# ─── PROMOTIONS ──────────────────────────────────────────────────────────────
+
+
+class PromotionBase(BaseModel):
+    titre: str
+    type_promotion: TypePromotion
+    description: Optional[str] = None
+    texte_complet: Optional[str] = None
+    numero_contact: Optional[str] = None
+    image_url: Optional[str] = None
+    adresse: Optional[str] = None
+    note_popularite: int = 50
+
+
+class PromotionCreate(PromotionBase):
+    pass
+
+
+class PromotionUpdate(BaseModel):
+    titre: Optional[str] = None
+    type_promotion: Optional[TypePromotion] = None
+    description: Optional[str] = None
+    texte_complet: Optional[str] = None
+    numero_contact: Optional[str] = None
+    image_url: Optional[str] = None
+    adresse: Optional[str] = None
+    note_popularite: Optional[int] = None
+    is_featured: Optional[bool] = None
+    is_active: Optional[bool] = None
+
+
+class PromotionOut(PromotionBase):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    vues: int = 0
+    is_featured: bool = False
+    is_active: bool = True
     created_at: Optional[datetime] = None
 
 
@@ -215,5 +266,8 @@ class StatsAdmin(BaseModel):
     total_contenus: int
     total_regions: int
     total_interactions: int
+    total_promotions: int = 0
     contenus_par_type: Dict[str, int] = {}
     utilisateurs_premium: int = 0
+    utilisateurs_touristes: int = 0
+    utilisateurs_locaux: int = 0

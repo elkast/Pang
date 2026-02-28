@@ -1,0 +1,51 @@
+# Tâches — IvoCulture Refonte Complète
+
+## Phase 1 : Corrections Backend (Bugs critiques)
+- [/] Corriger l'import relatif dans [main.py](file:///C:/niveau2/backend/main.py) (from .database → from database)
+- [ ] Corriger les imports relatifs dans tous les routers/models/schemas
+- [ ] Ajouter le modèle `Promotion` (site, mosquee, musique, legende, touriste)
+- [ ] Ajouter le schema `PromotionCreate` / `PromotionOut`
+- [ ] Creer le routeur `promotions_routeur.py` (CRUD complet)
+- [ ] Ajouter la logique modele economique touriste vs local
+- [ ] Mettre a jour [models/__init__.py](file:///C:/niveau2/backend/models/__init__.py) avec le modele Promotion
+- [ ] Mettre a jour [admin_routeur.py](file:///C:/niveau2/backend/routers/admin_routeur.py) pour gerer les promotions
+- [ ] Mettre a jour [schemas/__init__.py](file:///C:/niveau2/backend/schemas/__init__.py) avec les nouveaux schemas
+- [ ] Mettre a jour [routers/__init__.py](file:///C:/niveau2/backend/routers/__init__.py) pour inclure promotions
+- [ ] Mettre a jour [main.py](file:///C:/niveau2/backend/main.py) pour inclure le nouveau routeur
+
+## Phase 2 : Frontend — Theme et Couleurs
+- [ ] Mettre a jour [couleurs.ts](file:///C:/niveau2/frontend/src/constantes/couleurs.ts) : theme blanc/orange (light mode)
+- [ ] Mettre a jour [App.tsx](file:///C:/niveau2/frontend/App.tsx) : theme light + supprimer SSRProvider warning
+- [ ] Corriger l'import dans [useAuth.ts](file:///C:/niveau2/frontend/src/hooks/useAuth.ts) (chemin api/client)
+
+## Phase 3 : Frontend — Nouveau Module Promotion
+- [ ] Creer `EcranPromotion.tsx` (liste des entites promues avec notoriete)
+- [ ] Creer `EcranDetailPromotion.tsx`
+- [ ] Ajouter les mocks pour les promotions dans [mockDonnees.ts](file:///C:/niveau2/frontend/src/donnees/mockDonnees.ts)
+- [ ] Creer le hook `usePromotions.ts` (avec fallback mock)
+- [ ] Mettre a jour [AppNavigator.tsx](file:///C:/niveau2/frontend/src/navigation/AppNavigator.tsx) pour inclure les nouveaux ecrans
+- [ ] Mettre a jour [TabNavigateur.tsx](file:///C:/niveau2/frontend/src/navigation/TabNavigateur.tsx) pour ajouter l'onglet Promotion
+
+## Phase 4 : Frontend — Interface Admin CRUD
+- [ ] Creer `EcranAdmin.tsx` (tableau de bord)
+- [ ] Creer `EcranAdminUtilisateurs.tsx` (CRUD utilisateurs)
+- [ ] Creer `EcranAdminContenus.tsx` (CRUD contenus)
+- [ ] Creer `EcranAdminRegions.tsx` (CRUD regions)
+- [ ] Creer `EcranAdminPromotions.tsx` (CRUD promotions)
+- [ ] Creer le hook `useAdmin.ts` (toutes les mutations admin)
+- [ ] Mettre a jour navigation pour acces admin
+
+## Phase 5 : Frontend — Modele Economique
+- [ ] Ajouter champ `type_utilisateur` (local / touriste) a l'inscription
+- [ ] Creer `EcranAbonnement.tsx` (offre premium pour touristes)
+- [ ] Restreindre l'acces contenu premium aux touristes non-payants
+
+## Phase 6 : Corrections techniques diverses
+- [ ] Corriger l'erreur reseau inscription (URL API)
+- [ ] Ameliorer [EcranAccueil.tsx](file:///C:/niveau2/frontend/src/ecrans/EcranAccueil.tsx) avec la section Promotion
+- [ ] Verifier et corriger toutes les incoherences de navigation
+
+## Phase 7 : Verification et UML
+- [ ] Tester le lancement du backend (uvicorn)
+- [ ] Tester la navigation frontend (Expo)
+- [ ] Documenter le diagramme UML

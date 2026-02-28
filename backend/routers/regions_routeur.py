@@ -1,6 +1,6 @@
 # =============================================================================
 # IvoCulture — Routeur Régions
-# CRUD complet des régions culturelles
+# CRUD des régions culturelles
 # =============================================================================
 
 from fastapi import APIRouter, Depends, HTTPException

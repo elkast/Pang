@@ -33,6 +33,13 @@ class RoleUtilisateur(str, enum.Enum):
     ADMIN = "admin"
 
 
+class TypeUtilisateur(str, enum.Enum):
+    """Type d'utilisateur : local ou touriste"""
+
+    LOCAL = "local"
+    TOURISTE = "touriste"
+
+
 class TypeContenu(str, enum.Enum):
     """Types de contenus culturels"""
 
@@ -57,6 +64,16 @@ class TypeInteraction(str, enum.Enum):
     PARTAGE = "PARTAGE"
 
 
+class TypePromotion(str, enum.Enum):
+    """Types d'entités promues sur la plateforme"""
+
+    SITE = "site"
+    MOSQUEE = "mosquee"
+    MUSIQUE = "musique"
+    LEGENDE = "legende"
+    TOURISTE = "touriste"
+
+
 # ─── MODÈLES ─────────────────────────────────────────────────────────────────
 
 
@@ -73,6 +90,7 @@ class User(Base):
     pays = Column(String, default="Côte d'Ivoire")
     ville = Column(String, nullable=True)
     preferences = Column(JSON, default=list)
+    type_utilisateur = Column(SQLEnum(TypeUtilisateur), default=TypeUtilisateur.LOCAL)
     is_premium = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
@@ -97,7 +115,7 @@ class Region(Base):
     nom = Column(String, unique=True, index=True, nullable=False)
     description = Column(Text)
     image_url = Column(String)
-    couleur_theme = Column(String, default="#1E6B45")
+    couleur_theme = Column(String, default="#E67E22")
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
     population = Column(String, nullable=True)
@@ -141,6 +159,8 @@ class ContenuCulturel(Base):
     likes = Column(Integer, default=0)
     is_published = Column(Boolean, default=True)
     is_featured = Column(Boolean, default=False)
+    # Contenu premium : réservé aux touristes abonnés
+    is_premium = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -164,3 +184,25 @@ class InteractionUtilisateur(Base):
 
     utilisateur = relationship("User", back_populates="interactions")
     contenu = relationship("ContenuCulturel", back_populates="interactions")
+
+
+class Promotion(Base):
+    """Entité promue sur la plateforme : site, mosquée, musique, légende, touriste"""
+    __tablename__ = "promotions"
+    id = Column(Integer, primary_key=True)
+    titre = Column(String, index=True, nullable=False)
+    type_promotion = Column(SQLEnum(TypePromotion), index=True, nullable=False)
+    description = Column(Text, nullable=True)
+    texte_complet = Column(Text, nullable=True)
+    numero_contact = Column(String, nullable=True)
+    image_url = Column(String, nullable=True)
+    adresse = Column(String, nullable=True)
+    # Note de notoriété de 0 à 100
+    note_popularite = Column(Integer, default=50)
+    # Nombre de vues / partages enregistrés
+    vues = Column(Integer, default=0)
+    # Un élément peut être mis en avant sur l'accueil
+    is_featured = Column(Boolean, default=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())

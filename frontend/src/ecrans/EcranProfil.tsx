@@ -25,13 +25,13 @@ interface ElementMenu {
 
 export default function EcranProfil() {
     const navigation = useNavigation<Nav>();
-    const { utilisateur, estAdmin, chargement, seDeconnecter } = useAuth();
+    const { utilisateur, estAdmin, estTouriste, estPremium, chargement, seDeconnecter } = useAuth();
 
     const elementsMenu: ElementMenu[] = [
         { titre: 'Mes Favoris', icone: 'heart-outline', action: 'Favoris', couleur: Couleurs.etat.erreur },
         { titre: 'Mes Contributions', icone: 'create-outline', action: 'Contribution', couleur: Couleurs.or.principal },
         { titre: 'Découvrir', icone: 'compass-outline', action: 'Decouverte', couleur: Couleurs.accent.vert },
-        { titre: 'Portails d\'Ivoire', icone: 'map-outline', action: 'Portails', couleur: Couleurs.foret.principal },
+        { titre: "Portails d'Ivoire", icone: 'map-outline', action: 'Portails', couleur: Couleurs.foret.principal },
     ];
 
     const gererDeconnexion = () => {
@@ -65,6 +65,9 @@ export default function EcranProfil() {
                 break;
             case 'Portails':
                 navigation.navigate('Portails');
+                break;
+            case 'Abonnement':
+                navigation.navigate('Abonnement');
                 break;
         }
     };
@@ -126,13 +129,35 @@ export default function EcranProfil() {
                         </TouchableOpacity>
                     ))}
 
+                    {/* Abonnement Premium (touriste non premium) */}
+                    {estTouriste && !estPremium && (
+                        <>
+                            <View style={styles.separateur} />
+                            <TouchableOpacity
+                                style={styles.elementMenu}
+                                onPress={() => navigation.navigate('Abonnement')}
+                            >
+                                <View style={styles.gauchMenu}>
+                                    <View style={[styles.iconeConteneur, { backgroundColor: '#9B59B615' }]}>
+                                        <Ionicons name="diamond-outline" size={20} color="#9B59B6" />
+                                    </View>
+                                    <View>
+                                        <Text style={styles.titreMenu}>Passer en Premium</Text>
+                                        <Text style={{ color: '#9B59B6', fontSize: 11 }}>Contenus exclusifs pour touristes</Text>
+                                    </View>
+                                </View>
+                                <Ionicons name="chevron-forward" size={18} color="#9B59B6" />
+                            </TouchableOpacity>
+                        </>
+                    )}
+
                     {/* Section admin */}
                     {estAdmin && (
                         <>
                             <View style={styles.separateur} />
                             <TouchableOpacity
                                 style={styles.elementMenu}
-                                onPress={() => Alert.alert('Admin', 'Dashboard admin en développement.')}
+                                onPress={() => navigation.navigate('Principal')}
                             >
                                 <View style={styles.gauchMenu}>
                                     <View style={[styles.iconeConteneur, { backgroundColor: Couleurs.etat.succes + '15' }]}>

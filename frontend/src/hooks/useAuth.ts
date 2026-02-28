@@ -3,8 +3,8 @@
 // =============================================================================
 
 import { useState, useEffect, useCallback } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../../api/client';
+import { tokenStorage } from '../utils/tokenStorage';
+import api from '../api/client';
 
 interface Utilisateur {
     id: number;
@@ -13,6 +13,7 @@ interface Utilisateur {
     nom_complet?: string;
     bio?: string;
     avatar_url?: string;
+    type_utilisateur: 'local' | 'touriste';
     is_premium: boolean;
     is_admin: boolean;
     contributions_count: number;
@@ -23,19 +24,21 @@ export function useAuth() {
         utilisateur: null,
         estConnecte: false,
         estAdmin: false,
+        estTouriste: false,
+        estPremium: false,
         chargement: true,
     });
 
     const chargerProfil = useCallback(async () => {
         let token = null;
         try {
-            token = await AsyncStorage.getItem('token');
+            token = await tokenStorage.getToken();
         } catch {
             // Storage non disponible - continuer silencieusement
         }
 
         if (!token) {
-            setEtat({ utilisateur: null, estConnecte: false, estAdmin: false, chargement: false });
+            setEtat({ utilisateur: null, estConnecte: false, estAdmin: false, estTouriste: false, estPremium: false, chargement: false });
             return;
         }
         try {
@@ -44,10 +47,12 @@ export function useAuth() {
                 utilisateur: data,
                 estConnecte: true,
                 estAdmin: data.is_admin || false,
+                estTouriste: data.type_utilisateur === 'touriste',
+                estPremium: data.is_premium || false,
                 chargement: false,
             });
         } catch {
-            setEtat({ utilisateur: null, estConnecte: false, estAdmin: false, chargement: false });
+            setEtat({ utilisateur: null, estConnecte: false, estAdmin: false, estTouriste: false, estPremium: false, chargement: false });
         }
     }, []);
 
@@ -65,7 +70,7 @@ export function useAuth() {
         });
 
         try {
-            await AsyncStorage.setItem('token', data.access_token);
+            await tokenStorage.setToken(data.access_token);
         } catch {
             // Ignorer erreur storage
         }
@@ -74,17 +79,25 @@ export function useAuth() {
             utilisateur: data.user,
             estConnecte: true,
             estAdmin: data.user.is_admin || false,
+            estTouriste: data.user.type_utilisateur === 'touriste',
+            estPremium: data.user.is_premium || false,
             chargement: false,
         });
         return data;
     };
 
-    const inscrire = async (nomUtilisateur: string, email: string, motDePasse: string) => {
+    const inscrire = async (
+        nomUtilisateur: string,
+        email: string,
+        motDePasse: string,
+        typeUtilisateur: 'local' | 'touriste' = 'local'
+    ) => {
         try {
             const { data } = await api.post('/auth/register', {
                 email,
                 username: nomUtilisateur,
                 password: motDePasse,
+                type_utilisateur: typeUtilisateur,
             });
             return data;
         } catch (error: any) {
@@ -95,11 +108,11 @@ export function useAuth() {
 
     const seDeconnecter = async () => {
         try {
-            await AsyncStorage.removeItem('token');
+            await tokenStorage.removeToken();
         } catch {
             // Ignorer erreur storage
         }
-        setEtat({ utilisateur: null, estConnecte: false, estAdmin: false, chargement: false });
+        setEtat({ utilisateur: null, estConnecte: false, estAdmin: false, estTouriste: false, estPremium: false, chargement: false });
     };
 
     return {

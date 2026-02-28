@@ -1,0 +1,76 @@
+# IvoCulture Refonte — Récapitulatif des Changements
+
+## Ce qui existait déjà ✅
+Phases 1, 2 et 3 partielle étaient **déjà complètes** avant cette session :
+- **Backend 100%** : modèles, schemas Pydantic, tous les routeurs (promotions, admin CRUD complet)
+- **Frontend** : [couleurs.ts](file:///C:/niveau2/frontend/src/constantes/couleurs.ts), [App.tsx](file:///C:/niveau2/frontend/App.tsx), [useAuth.ts](file:///C:/niveau2/frontend/src/hooks/useAuth.ts), [usePromotions.ts](file:///C:/niveau2/frontend/src/hooks/usePromotions.ts), [mockDonnees.ts](file:///C:/niveau2/frontend/src/donnees/mockDonnees.ts), `EcranPromotion`, `EcranDetailPromotion`, [EcranAdmin](file:///C:/niveau2/frontend/src/ecrans/EcranAdmin.tsx#69-136)
+
+---
+
+## Nouveaux fichiers créés en cette session
+
+### Hooks
+| Fichier | Rôle |
+|--------|-------|
+| [useAdmin.ts](file:///C:/niveau2/frontend/src/hooks/useAdmin.ts) | Centralise toutes les mutations CRUD admin (utilisateurs, contenus, régions, promotions) |
+
+### Écrans Admin CRUD
+| Fichier | Rôle |
+|--------|-------|
+| [EcranAdminUtilisateurs.tsx](file:///C:/niveau2/frontend/src/ecrans/EcranAdminUtilisateurs.tsx) | Liste et gestion de rôles/statuts des comptes |
+| [EcranAdminContenus.tsx](file:///C:/niveau2/frontend/src/ecrans/EcranAdminContenus.tsx) | Toggle publié/featured + suppression contenus |
+| [EcranAdminRegions.tsx](file:///C:/niveau2/frontend/src/ecrans/EcranAdminRegions.tsx) | CRUD régions avec formulaire inline |
+| [EcranAdminPromotions.tsx](file:///C:/niveau2/frontend/src/ecrans/EcranAdminPromotions.tsx) | CRUD promotions avec formulaire complet + toggle featured |
+
+### Modèle Économique
+| Fichier | Rôle |
+|--------|-------|
+| [EcranAbonnement.tsx](file:///C:/niveau2/frontend/src/ecrans/EcranAbonnement.tsx) | Écran offre premium pour touristes (plans Mensuel/Annuel) |
+
+---
+
+## Fichiers modifiés
+
+### Navigation
+- **[AppNavigator.tsx](file:///C:/niveau2/frontend/src/navigation/AppNavigator.tsx)** — Ajout des routes : [DetailPromotion](file:///C:/niveau2/frontend/src/hooks/usePromotions.ts#54-68), [Abonnement](file:///C:/niveau2/frontend/src/ecrans/EcranAbonnement.tsx#35-168), [AdminUtilisateurs](file:///C:/niveau2/frontend/src/ecrans/EcranAdminUtilisateurs.tsx#89-177), [AdminContenus](file:///C:/niveau2/frontend/src/ecrans/EcranAdminContenus.tsx#94-161), [AdminRegions](file:///C:/niveau2/frontend/src/ecrans/EcranAdminRegions.tsx#55-165), [AdminPromotions](file:///C:/niveau2/frontend/src/ecrans/EcranAdminPromotions.tsx#142-235)
+- **[TabNavigateur.tsx](file:///C:/niveau2/frontend/src/navigation/TabNavigateur.tsx)** — Ajout onglet **Promotions** (★) + onglet **Admin** (🛡️) conditionnel `estAdmin`
+
+### Écrans
+- **[EcranInscription.tsx](file:///C:/niveau2/frontend/src/ecrans/EcranInscription.tsx)** — Sélecteur **Local / Touriste** avec icônes, couleurs thématiques, message info pour touristes
+- **[EcranAccueil.tsx](file:///C:/niveau2/frontend/src/ecrans/EcranAccueil.tsx)** — Section **✨ À la Une** (promotions featured en scroll horizontal)
+- **[EcranProfil.tsx](file:///C:/niveau2/frontend/src/ecrans/EcranProfil.tsx)** — Lien **Passer en Premium** (visible pour `estTouriste && !estPremium`), Admin navigue vers l'onglet Admin
+
+---
+
+## Vérifications
+
+### Backend
+```powershell
+# Compilation vérifiée avec py_compile — aucune erreur
+Set-Location C:\niveau2\backend
+.\venv\Scripts\python.exe -m py_compile main.py models/__init__.py schemas/__init__.py routers/__init__.py routers/promotions_routeur.py routers/admin_routeur.py
+# Output: ALL OK
+```
+
+### Démarrer le backend
+```powershell
+Set-Location C:\niveau2\backend
+.\venv\Scripts\activate
+uvicorn main:app --reload --port 8000
+# → http://localhost:8000 doit répondre avec {"message": "Bienvenue sur l'API IvoCulture"}
+# → http://localhost:8000/docs pour la documentation interactive
+```
+
+### Démarrer le frontend
+```powershell
+Set-Location C:\niveau2\frontend
+npx expo start
+```
+
+### Check-list de navigation à valider
+- [ ] Onglet ★ Promotions → `EcranPromotion`
+- [ ] Tap sur une promotion → `EcranDetailPromotion`
+- [ ] Accueil → section "À la Une" avec cartes de promotions
+- [ ] Inscription → sélecteur Local/Touriste visible
+- [ ] Profil (touriste non-premium) → item "Passer en Premium" visible → [EcranAbonnement](file:///C:/niveau2/frontend/src/ecrans/EcranAbonnement.tsx#35-168)
+- [ ] Connexion admin → onglet 🛡️ Admin visible → sous-sections CRUD accessibles

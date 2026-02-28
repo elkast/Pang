@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 200" width="620" height="200">
+  <defs>
+    <!-- Dégradé principal orange → jaune → blanc -->
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#FF6B00"/>
+      <stop offset="45%"  stop-color="#FFD000"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+
+    <!-- Dégradé secondaire blanc → jaune → orange -->
+    <linearGradient id="grad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#FFFFFF"/>
+      <stop offset="40%"  stop-color="#FFE040"/>
+      <stop offset="100%" stop-color="#FF6B00"/>
+    </linearGradient>
+
+    <!-- Dégradé diagonal pour le symbole -->
+    <linearGradient id="gradSymbol" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#FF6B00"/>
+      <stop offset="35%"  stop-color="#FFB800"/>
+      <stop offset="65%"  stop-color="#FFD000"/>
+      <stop offset="100%" stop-color="#FFF0A0"/>
+    </linearGradient>
+
+    <!-- Dégradé texte -->
+    <linearGradient id="gradText" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#FF6B00"/>
+      <stop offset="50%"  stop-color="#FFD000"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+
+    <!-- Dégradé sous-titre -->
+    <linearGradient id="gradSub" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#FFB800"/>
+      <stop offset="100%" stop-color="#FFE566"/>
+    </linearGradient>
+
+    <!-- Glow chaud -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════
+       SYMBOLE — Nœud/Ruban style "IO" entrelacé
+       Inspiré du logo original : deux formes en miroir
+  ════════════════════════════════════════════════════ -->
+
+  <!-- Forme gauche — boucle gauche -->
+  <path d="
+    M 60,55
+    C 60,30 80,20 100,35
+    L 130,60
+    C 145,72 145,88 130,100
+    L 100,125
+    C 80,140 60,130 60,105
+    Z
+  " fill="url(#gradSymbol)" opacity="0.95" filter="url(#glow)"/>
+
+  <!-- Forme droite — boucle droite (miroir) -->
+  <path d="
+    M 200,55
+    C 200,30 180,20 160,35
+    L 130,60
+    C 115,72 115,88 130,100
+    L 160,125
+    C 180,140 200,130 200,105
+    Z
+  " fill="url(#grad2)" opacity="0.9" filter="url(#glow)"/>
+
+  <!-- Découpe centrale gauche (ombre/creux) -->
+  <path d="
+    M 80,65
+    C 80,50 90,45 100,52
+    L 122,68
+    C 130,74 130,86 122,92
+    L 100,108
+    C 90,115 80,110 80,95
+    Z
+  " fill="url(#grad1)" opacity="0.5"/>
+
+  <!-- Découpe centrale droite -->
+  <path d="
+    M 180,65
+    C 180,50 170,45 160,52
+    L 138,68
+    C 130,74 130,86 138,92
+    L 160,108
+    C 170,115 180,110 180,95
+    Z
+  " fill="url(#gradSymbol)" opacity="0.45"/>
+
+  <!-- Points de connexion lumineux -->
+  <circle cx="130" cy="68" r="5" fill="#FFD000" filter="url(#glow)"/>
+  <circle cx="130" cy="112" r="5" fill="#FFB800" filter="url(#glow)"/>
+
+  <!-- ═══════════════════════════════════════════════
+       TEXTE PRINCIPAL
+  ════════════════════════════════════════════════════ -->
+  <text x="230" y="105"
+        font-family="'Trebuchet MS', Arial, sans-serif"
+        font-size="62"
+        font-weight="700"
+        fill="url(#gradText)"
+        letter-spacing="-1"
+        filter="url(#glow)">IvoryOrigin</text>
+
+  <!-- ═══════════════════════════════════════════════
+       SOUS-TITRE
+  ════════════════════════════════════════════════════ -->
+  <text x="232" y="138"
+        font-family="Arial, sans-serif"
+        font-size="13"
+        font-weight="400"
+        fill="url(#gradSub)"
+        letter-spacing="5">NOTRE CULTURE, NOTRE IDENTITÉ</text>
+
+</svg>

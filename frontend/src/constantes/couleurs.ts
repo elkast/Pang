@@ -1,75 +1,75 @@
 // =============================================================================
 // IvoCulture — Design Tokens Unifiés
-// Thème sombre africain inspiré des couleurs Kente, Forêt, Terre
+// Thème clair : Blanc & Orange, accents culturels ivoiriens
 // =============================================================================
 
 export const Couleurs = {
-    // Or Kente — accent principal
+    // Or Kente — accent clair
     or: {
-        clair: '#FBF8EE',
-        doux: '#F4EBC8',
-        moyen: '#E2CC74',
-        principal: '#C4A02A',
-        fonce: '#9D8022',
-        profond: '#76611A',
+        clair: '#FFF9EE',
+        doux: '#FCEBBF',
+        moyen: '#F0C040',
+        principal: '#E67E22',
+        fonce: '#D35400',
+        profond: '#A04000',
     },
 
-    // Forêt tropicale
+    // Forêt tropicale — touches vertes
     foret: {
-        clair: '#E8F0EC',
-        doux: '#C4D9CF',
-        moyen: '#6DA883',
+        clair: '#E8F5EE',
+        doux: '#B7DEC9',
+        moyen: '#4CAF82',
         principal: '#1E6B45',
-        fonce: '#175537',
-        profond: '#0B2A1C',
+        fonce: '#145432',
+        profond: '#0B3320',
     },
 
     // Terre latérite
     terre: {
-        clair: '#F5EDE8',
-        principal: '#8B5C34',
-        fonce: '#54371E',
+        clair: '#FDF0EA',
+        principal: '#C4784A',
+        fonce: '#8B4513',
     },
 
-    // Surfaces (thème sombre)
+    // Surfaces (thème clair blanc/orange)
     fond: {
-        primaire: '#121B22',
-        carte: '#1E2A32',
-        entete: '#0E2A34',
-        surface: '#2A3942',
-        overlay: 'rgba(0,0,0,0.5)',
+        primaire: '#FFFFFF',
+        carte: '#F8F9FA',
+        entete: '#FFF4EC',
+        surface: '#F0F2F5',
+        overlay: 'rgba(0,0,0,0.45)',
     },
 
     // Textes
     texte: {
-        primaire: '#E9EDEF',
-        secondaire: '#8696A1',
-        desactive: '#556671',
+        primaire: '#1A1A1A',
+        secondaire: '#6B6B6B',
+        desactive: '#ABABAB',
         inverse: '#FFFFFF',
-        accent: '#00A884',
+        accent: '#E67E22',
     },
 
-    // Accent
+    // Accent principal orange
     accent: {
         principal: '#E67E22',
         fonce: '#D35400',
-        clair: '#F39C12',
-        vert: '#00A884',
-        vertFonce: '#00897B',
+        clair: '#F5A623',
+        vert: '#1E6B45',
+        vertFonce: '#145432',
     },
 
     // États
     etat: {
-        succes: '#25D366',
-        erreur: '#EF4444',
-        attention: '#F59E0B',
-        info: '#3B82F6',
+        succes: '#2ECC71',
+        erreur: '#E74C3C',
+        attention: '#F39C12',
+        info: '#3498DB',
     },
 
     // Couleurs des catégories
     categorie: {
         masque: '#E67E22',
-        gastronomie: '#D4781F',
+        gastronomie: '#D35400',
         legende: '#C4A02A',
         site: '#1E6B45',
         musique: '#8B5C34',
@@ -101,22 +101,22 @@ export const Ombres = {
     petit: {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.3,
-        shadowRadius: 2,
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
         elevation: 2,
     },
     moyen: {
-        shadowColor: '#000',
+        shadowColor: '#E67E22',
         shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.35,
-        shadowRadius: 5,
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
         elevation: 5,
     },
     grand: {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.4,
-        shadowRadius: 10,
+        shadowOpacity: 0.15,
+        shadowRadius: 14,
         elevation: 10,
     },
 } as const;
